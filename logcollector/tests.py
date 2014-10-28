@@ -168,12 +168,12 @@ class TestMvgAvg(TestDatabase):
 
     def test_valid_mvgavg_request_without_dim1_dim2(self):
         response = self.client.get('/log/?t1=1&t2=4&method=MvgAvg&n=2')
-        self.assertEqual(response.content, "3.75")
+        self.assertEqual(response.content, "3.33333333333333")
         self.assertEqual(response.status_code, 200)
     
     def test_valid_mvgavg_request_with_dim1_without_dim2(self):
         response = self.client.get('/log/?t1=1&t2=4&method=MvgAvg&dim1=1&n=2')
-        self.assertEqual(response.content, "1.75")
+        self.assertEqual(response.content, "2.5")
         self.assertEqual(response.status_code, 200)
 
     def test_valid_mvgavg_request_without_dim1_with_dim2(self):

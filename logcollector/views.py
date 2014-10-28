@@ -25,7 +25,7 @@ class LogFun(APIView):
         if 't1' not in params.keys() or 't2' not in params.keys():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
-        rng = (params['t1'],params['t2'])
+        rng = [params['t1'],params['t2']]
         check_int_value(rng[0])
         check_int_value(rng[1])       
         
@@ -67,7 +67,8 @@ class LogFun(APIView):
                 check_int_value(n)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-            mvgavg = data.filter(timestamp__range=rng).order_by('-timestamp')[:n].aggregate(Avg('value'))['value__avg']
+            rng[0] = str(int(rng[1]) - int(n))
+            mvgavg = data.filter(timestamp__range=rng).aggregate(Avg('value'))['value__avg']
             return Response(mvgavg)
         else:
              return Response(status=status.HTTP_400_BAD_REQUEST)                       
