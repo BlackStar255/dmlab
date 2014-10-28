@@ -64,8 +64,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'logcollector',
         'HOST': '127.0.0.1',
-        'USER': ,
-        'PASSWORD': ,
+        'USER': 'user',
+        'PASSWORD': 'user',
     }
 }
 

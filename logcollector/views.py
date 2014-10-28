@@ -17,12 +17,12 @@ def check_int_value(value):
 class LogFun(APIView):
 
     def get(self, request, format=None):
-        #List the last 5 log instance, or calculate the required data based on the parameters of the get request
+        #Calculate the required data based on the parameters of the get request
         params = request.GET
         method = None
         
-        #List the last five log instance if t1 or t2 not provided    
-        if 't1' not in params.keys() or 't2' not in params.keys():
+        #Checking for t1, t2 parameters
+        if 't1' not in params or 't2' not in params:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
         rng = [params['t1'],params['t2']]
