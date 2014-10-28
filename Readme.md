@@ -32,10 +32,10 @@ A Django beépített StdDev függvénye alapértelmezetten a PostgreSQL STDDEV_POP fü
 
 Példa lekérdezések:
 
-http://127.0.0.1:8000/log/?t1=1&t2=10&method=Max /n
-http://127.0.0.1:8000/log/?t1=1&t2=10&method=Min&dim1=1 /n
-http://127.0.0.1:8000/log/?t1=1&t2=10&method=Avg&dim2=1 /n
-http://127.0.0.1:8000/log/?t1=1&t2=10&method=StdDev&dim1=1&dim2=4 /n
+http://127.0.0.1:8000/log/?t1=1&t2=10&method=Max
+http://127.0.0.1:8000/log/?t1=1&t2=10&method=Min&dim1=1
+http://127.0.0.1:8000/log/?t1=1&t2=10&method=Avg&dim2=1
+http://127.0.0.1:8000/log/?t1=1&t2=10&method=StdDev&dim1=1&dim2=4
 http://127.0.0.1:8000/log/?t1=1&t2=10&method=MvgAvg&n=400
 
 -----------------------------------------------------------------------------------------------------------------------
