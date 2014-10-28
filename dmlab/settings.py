@@ -37,7 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'logcollector'
+    'logcollector',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -60,8 +61,11 @@ WSGI_APPLICATION = 'dmlab.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'logcollector.db'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'logcollector',
+        'HOST': '127.0.0.1',
+        'USER': 'postgres',
+        'PASSWORD': 'nyuszikam',
     }
 }
 

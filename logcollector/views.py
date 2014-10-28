@@ -7,103 +7,76 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Max, Min, Avg, StdDev
 
+
+def check_int_value(value):
+    try:
+        int(value)
+    except ValueError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
 class LogFun(APIView):
-    
+
     def get(self, request, format=None):
+        #List the last 5 log instance, or calculate the required data based on the parameters of the get request
         params = request.GET
         method = None
+        
+        #List the last five log instance if t1 or t2 not provided    
         if 't1' not in params.keys() or 't2' not in params.keys():
-            log = Log.objects.all().order_by('-timestamp')[:5]
-            serializer = LogSerializer(log, many=True)
-            return Response(serializer.data)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
         rng = (params['t1'],params['t2'])
-        if 'method' in params.keys():
+        check_int_value(rng[0])
+        check_int_value(rng[1])       
+        
+        #Checking for optional dim1, dim2 parameters and filter the data
+        data = Log.objects.all()
+        if 'dim1' in params:
+            dim1 = params['dim1']
+            check_int_value(dim1)
+            data = data.filter(dim1 = dim1)
+
+        if 'dim2' in params:
+            dim2 = params['dim2']
+            check_int_value(dim2)
+            data = data.filter(dim2 = dim2)               
+                
+        #Setting the method
+        if 'method' in params:
             method = params['method']
         
-        #Checking for optional parameters and filter the data
-        if 'dim1' in params.keys():
-            dim1 = params['dim1']
-            data = Log.objects.filter(dim1 = dim1)
-        if 'dim2' in params.keys():
-            dim2 = params['dim2']
-            if 'data' in locals():
-                data = data.filter(dim2 = dim2)
-            else: 
-                data = Log.objects.filter(dim2 = dim2)
-                
         #Calculate the required data
         if method == 'Min':
-            if 'data' in locals():
-                minimum = data.filter(timestamp__range=rng).aggregate(Min('value'))['value__min']
-            else:
-                minimum = Log.objects.filter(timestamp__range=rng).aggregate(Min('value'))['value__min']
+            minimum = data.filter(timestamp__range=rng).aggregate(Min('value'))['value__min']
             return Response(minimum)
         elif method == 'Max':
-            if 'data' in locals():
-                maximum = data.filter(timestamp__range=rng).aggregate(Max('value'))['value__max']
-            else:
-                maximum = Log.objects.filter(timestamp__range=rng).aggregate(Max('value'))['value__max']
+            maximum = data.filter(timestamp__range=rng).aggregate(Max('value'))['value__max']
             return Response(maximum)
         elif method == 'Avg':
-            if 'data' in locals():
-                avg = data.filter(timestamp__range=rng).aggregate(Avg('value'))['value__avg']
-            else:
-                avg = Log.objects.filter(timestamp__range=rng).aggregate(Avg('value'))['value__avg']
+            avg = data.filter(timestamp__range=rng).aggregate(Avg('value'))['value__avg']
             return Response(avg)
         elif method == 'StdDev':
-            if 'data' in locals():
-                stddev = data.filter(timestamp__range=rng).aggregate(StdDev('value'))['value__stddev']
-            else:
-                stddev = Log.objects.filter(timestamp__range=rng).aggregate(StdDev('value'))['value__stddev']
+            stddev = data.filter(timestamp__range=rng).aggregate(StdDev('value',sample=True))['value__stddev']
+            if not stddev:
+                return Response(0.0) #Database doesn't calculate stddev on one-element input                
             return Response(stddev)
         elif method == 'MvgAvg':
-            n = 5
-            if 'n' in params.keys():
+            n = None             
+            if 'n' in params:
                 n = params['n']
-            if 'data' in locals():
-                mvgavg = data.filter(timestamp__range=rng).aggregate(Avg('value'))['value__avg']
+                check_int_value(n)
             else:
-                mvgavg = Log.objects.filter(timestamp__range=rng).order_by('-timestamp')[:n].aggregate(Avg('value'))['value__avg']
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            mvgavg = data.filter(timestamp__range=rng).order_by('-timestamp')[:n].aggregate(Avg('value'))['value__avg']
             return Response(mvgavg)
+        else:
+             return Response(status=status.HTTP_400_BAD_REQUEST)                       
     
 
     def post(self, request, format=None):
-        serializer = LogSerializer(data=request.DATA, many = True)
+        #Create a new log instance
+        serializer = LogSerializer(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)            
-    
-"""
-class LogDetail(APIView):
-    def get_object(self, pk):
-        try:
-            return Log.objects.get(timestamp=pk)
-        except Log.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        log = self.get_object(pk)
-        serializer = LogSerializer(log)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        log = self.get_object(pk)
-        serializer = LogSerializer(log, data=request.DATA)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        log = self.get_object(pk)
-        log.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-        
-class LogList(APIView):
-     def get(self, request, format=None):
-        log = Log.objects.all()
-        serializer = LogSerializer(log, many=True)
-        return Response(serializer.data)
-        
-"""
