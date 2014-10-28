@@ -56,7 +56,7 @@ class LogFun(APIView):
             avg = data.filter(timestamp__range=rng).aggregate(Avg('value'))['value__avg']
             return Response(avg)
         elif method == 'StdDev':
-            stddev = data.filter(timestamp__range=rng).aggregate(StdDev('value',sample=True))['value__stddev']
+            stddev = data.filter(timestamp__range=rng).aggregate(StdDev('value'))['value__stddev']
             if not stddev:
                 return Response(0.0) #Database doesn't calculate stddev on one-element input                
             return Response(stddev)

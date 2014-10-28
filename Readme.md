@@ -26,8 +26,6 @@ n - MvgAvg methodhoz kötelezõ paramétere. Ezzel lehet megadni, hogy a t2 idõpont
 
 Az aggregáláshoz a Django beépített aggregáló függvényeit használtam, amik adatbázis szinten hajtják végre a lekérdezéseket.
 
-A Django beépített StdDev függvénye alapértelmezetten a PostgreSQL STDDEV_POP függvényét hívja meg azonban ez nem a hétköznapi értelemben vett szórást adja vissza. StdDev sample paraméterét TRUE-ra állítva az STDDEV_SAMP kerül meghívásra, ami már jó értéket számol, azonban 1 elemû halmazra nem ad vissza értéket. Ezt külön lekezeltem.
-
 -----------------------------------------------------------------------------------------------------------------------
 
 Példa lekérdezések:

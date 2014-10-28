@@ -142,17 +142,17 @@ class TestStdDev(TestDatabase):
 
     def test_valid_stddev_request_without_dim1_dim2(self):
         response = self.client.get('/log/?t1=1&t2=4&method=StdDev')
-        self.assertEqual(response.content, "1.44337567297406")
+        self.assertEqual(response.content, "1.25")
         self.assertEqual(response.status_code, 200)
     
     def test_valid_stddev_request_with_dim1_without_dim2(self):
         response = self.client.get('/log/?t1=1&t2=4&method=StdDev&dim1=1')
-        self.assertEqual(response.content, "1.06066017177982")
+        self.assertEqual(response.content, "0.75")
         self.assertEqual(response.status_code, 200)
 
     def test_valid_stddev_request_without_dim1_with_dim2(self):
         response = self.client.get('/log/?t1=1&t2=4&method=StdDev&dim2=2')
-        self.assertEqual(response.content, "1.4142135623731")
+        self.assertEqual(response.content, "1.0")
         self.assertEqual(response.status_code, 200)
         
     def test_valid_stddev_request_with_dim1_dim2(self):
